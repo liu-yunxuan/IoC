@@ -1,6 +1,6 @@
 package asia.liuyunxuan.ioc.beans.factory.support;
 
-import asia.liuyunxuan.ioc.BeansException;
+import asia.liuyunxuan.ioc.beans.BeansException;
 import asia.liuyunxuan.ioc.beans.factory.config.BeanDefinition;
 
 import java.util.Map;
@@ -18,7 +18,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
     @Override
     public BeanDefinition getBeanDefinition(String beanName) throws BeansException {
         BeanDefinition beanDefinition = beanDefinitionMap.get(beanName);
-        if (beanDefinition == null) throw new BeansException("No bean named '" + beanName + "' is defined");
+        if (beanDefinition == null) throw new BeansException("Bean的名字: '" + beanName + "' 没有定义");
         return beanDefinition;
     }
 

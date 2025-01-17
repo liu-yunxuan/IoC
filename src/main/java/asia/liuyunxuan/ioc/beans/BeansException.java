@@ -1,4 +1,4 @@
-package asia.liuyunxuan.ioc;
+package asia.liuyunxuan.ioc.beans;
 
 public class BeansException extends RuntimeException {
     public BeansException(String message) {
