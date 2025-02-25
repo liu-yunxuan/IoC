@@ -1,7 +1,12 @@
 package asia.liuyunxuan.ioc;
 
 import asia.liuyunxuan.ioc.bean.StudentService;
+import asia.liuyunxuan.ioc.bean.UserDao;
+import asia.liuyunxuan.ioc.bean.UserService;
+import asia.liuyunxuan.ioc.beans.PropertyValue;
+import asia.liuyunxuan.ioc.beans.PropertyValues;
 import asia.liuyunxuan.ioc.beans.factory.config.BeanDefinition;
+import asia.liuyunxuan.ioc.beans.factory.config.BeanReference;
 import asia.liuyunxuan.ioc.beans.factory.support.DefaultListableBeanFactory;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.NoOp;
@@ -16,13 +21,21 @@ public class ApiTest {
         // 1.初始化 BeanFactory
         DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 
-        // 3. 注入bean
-        BeanDefinition beanDefinition = new BeanDefinition(StudentService.class);
-        beanFactory.registerBeanDefinition("studentService", beanDefinition);
+        // 2. UserDao 注册
+        beanFactory.registerBeanDefinition("userDao", new BeanDefinition(UserDao.class));
 
-        // 4.获取bean
-        StudentService studentService = (StudentService) beanFactory.getBean("studentService", "test");
-        studentService.queryStudent();
+        // 3. UserService 设置属性[id、userDao]
+        PropertyValues propertyValues = new PropertyValues();
+        propertyValues.addPropertyValue(new PropertyValue("id", "10001"));
+        propertyValues.addPropertyValue(new PropertyValue("userDao",new BeanReference("userDao")));
+
+        // 4. UserService 注入bean
+        BeanDefinition beanDefinition = new BeanDefinition(UserService.class, propertyValues);
+        beanFactory.registerBeanDefinition("userService", beanDefinition);
+
+        // 5. UserService 获取bean
+        UserService userService = (UserService) beanFactory.getBean("userService");
+        userService.queryUserInfo();
     }
 
     @Test
