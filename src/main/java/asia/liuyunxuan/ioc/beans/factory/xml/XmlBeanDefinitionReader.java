@@ -80,7 +80,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
                     String initMethod = getAttribute(reader,"init-method");
                     String destroyMethodName = getAttribute(reader,"destroy-method");
                     currentClassName = getAttribute(reader, "class");
-
+                    String beanScope = getAttribute(reader,"scope");
                     // 生成bean名称
                     currentBeanName = generateBeanName(id, name, currentClassName);
 
@@ -89,7 +89,9 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
                     currentBean = new BeanDefinition(clazz);
                     currentBean.setInitMethodName(initMethod);
                     currentBean.setDestroyMethodName(destroyMethodName);
-
+                    if (beanScope != null && !beanScope.isEmpty()) {
+                        currentBean.setScope(beanScope);
+                    }
                 }
 
                 // 处理property标签

@@ -124,21 +124,6 @@ public class ApiTest {
     }
 
     @Test
-    public void test_xml() {
-        // 1.初始化 BeanFactory
-        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:springPostProcessor.xml");
-        applicationContext.registerShutdownHook();
-
-        // 2. 获取Bean对象调用方法
-        UserService userService = applicationContext.getBean("userService", UserService.class);
-        String result = userService.queryUserInfo();
-        System.out.println("测试结果：" + result);
-        System.out.println("ApplicationContextAware："+userService.getApplicationContext());
-        System.out.println("BeanFactoryAware："+userService.getBeanFactory());
-    }
-
-
-    @Test
     public void test_BeanFactoryPostProcessorAndBeanPostProcessor(){
         // 1.初始化 BeanFactory
         DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
@@ -165,4 +150,36 @@ public class ApiTest {
     public void test_hook() {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> System.out.println("close！")));
     }
+
+    @Test
+    public void test_prototype() {
+        // 1. 初始化容器
+        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:spring.xml");
+        applicationContext.registerShutdownHook();
+
+        // 2. 获取Bean对象（测试作用域）
+        UserService userService01 = applicationContext.getBean("userService", UserService.class);
+        UserService userService02 = applicationContext.getBean("userService", UserService.class);
+
+        // 3. 验证是否为不同实例（prototype）或相同实例（singleton）
+        System.out.println("userService01 实例: " + userService01);
+        System.out.println("userService02 实例: " + userService02);
+        System.out.println("是否为不同实例: " + (userService01 != userService02));
+
+        // 4. 打印哈希码（替代内存布局分析）
+        System.out.println("userService01 哈希码: " + userService01.hashCode());
+        System.out.println("userService02 哈希码: " + userService02.hashCode());
+    }
+
+    @Test
+    public void test_factory_bean() {
+        // 1.初始化 BeanFactory
+        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:spring.xml");
+        applicationContext.registerShutdownHook();
+
+        // 2. 调用代理方法
+        UserService userService = applicationContext.getBean("userService", UserService.class);
+        System.out.println("测试结果：" + userService.queryUserInfo());
+    }
+
 }

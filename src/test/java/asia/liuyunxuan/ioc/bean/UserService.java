@@ -1,38 +1,15 @@
 package asia.liuyunxuan.ioc.bean;
 
-import asia.liuyunxuan.ioc.beans.BeansException;
-import asia.liuyunxuan.ioc.beans.factory.*;
-import asia.liuyunxuan.ioc.context.ApplicationContext;
-import asia.liuyunxuan.ioc.context.ApplicationContextAware;
 
-public class UserService implements BeanNameAware, BeanClassLoaderAware, ApplicationContextAware, BeanFactoryAware {
-
-    private ApplicationContext applicationContext;
-    private BeanFactory beanFactory;
+public class UserService {
 
     private String id;
     private String company;
     private String location;
-    private UserDao userDao;
+    private IUserDao userDao;
 
-    @Override
-    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-        this.beanFactory = beanFactory;
-    }
-
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
-    }
-
-    @Override
-    public void setBeanName(String name) {
-        System.out.println("Bean Name is：" + name);
-    }
-
-    @Override
-    public void setBeanClassLoader(ClassLoader classLoader) {
-        System.out.println("ClassLoader：" + classLoader);
+    public String queryUserInfo() {
+        return userDao.queryUserName(id) + "," + company + "," + location;
     }
 
     public String getId() {
@@ -43,12 +20,12 @@ public class UserService implements BeanNameAware, BeanClassLoaderAware, Applica
         this.id = id;
     }
 
-    public UserDao getUserDao() {
-        return userDao;
+    public String getCompany() {
+        return company;
     }
 
-    public void setUserDao(UserDao userDao) {
-        this.userDao = userDao;
+    public void setCompany(String company) {
+        this.company = company;
     }
 
     public String getLocation() {
@@ -59,23 +36,11 @@ public class UserService implements BeanNameAware, BeanClassLoaderAware, Applica
         this.location = location;
     }
 
-    public String getCompany() {
-        return company;
+    public IUserDao getUserDao() {
+        return userDao;
     }
 
-    public void setCompany(String company) {
-        this.company = company;
-    }
-
-    public String queryUserInfo() {
-        return userDao.queryUserName(id) + "," + company + "," + location;
-    }
-
-    public ApplicationContext getApplicationContext() {
-        return applicationContext;
-    }
-
-    public BeanFactory getBeanFactory() {
-        return beanFactory;
+    public void setUserDao(IUserDao userDao) {
+        this.userDao = userDao;
     }
 }
