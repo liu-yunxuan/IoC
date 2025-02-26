@@ -14,6 +14,7 @@ import asia.liuyunxuan.ioc.common.MyBeanPostProcessor;
 import asia.liuyunxuan.ioc.context.support.ClassPathXmlApplicationContext;
 import asia.liuyunxuan.ioc.core.io.DefaultResourceLoader;
 import asia.liuyunxuan.ioc.core.io.Resource;
+import asia.liuyunxuan.ioc.event.CustomEvent;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.NoOp;
 import org.junit.Before;
@@ -180,6 +181,14 @@ public class ApiTest {
         // 2. 调用代理方法
         UserService userService = applicationContext.getBean("userService", UserService.class);
         System.out.println("测试结果：" + userService.queryUserInfo());
+    }
+
+    @Test
+    public void test_event() {
+        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:spring.xml");
+        applicationContext.publishEvent(new CustomEvent(applicationContext, 1019129009086763L, "成功了！"));
+
+        applicationContext.registerShutdownHook();
     }
 
 }
