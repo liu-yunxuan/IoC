@@ -4,13 +4,19 @@ import asia.liuyunxuan.ioc.beans.BeansException;
 import asia.liuyunxuan.ioc.beans.factory.config.BeanDefinition;
 import asia.liuyunxuan.ioc.beans.factory.config.BeanPostProcessor;
 import asia.liuyunxuan.ioc.beans.factory.config.ConfigurableBeanFactory;
+import asia.liuyunxuan.ioc.utils.ClassUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry implements ConfigurableBeanFactory {
 
+    /** ClassLoader to resolve bean class names with, if necessary */
+    private final ClassLoader beanClassLoader = ClassUtils.getDefaultClassLoader();
+
+    /** BeanPostProcessors to apply in createBean */
     private final List<BeanPostProcessor> beanPostProcessors = new ArrayList<>();
+
 
     @Override
     public Object getBean(String name) throws BeansException {
@@ -55,4 +61,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
         return this.beanPostProcessors;
     }
 
+    public ClassLoader getBeanClassLoader() {
+        return this.beanClassLoader;
+    }
 }

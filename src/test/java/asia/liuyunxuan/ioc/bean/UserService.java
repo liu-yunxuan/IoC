@@ -1,9 +1,14 @@
 package asia.liuyunxuan.ioc.bean;
 
-import asia.liuyunxuan.ioc.beans.factory.DisposableBean;
-import asia.liuyunxuan.ioc.beans.factory.InitializingBean;
+import asia.liuyunxuan.ioc.beans.BeansException;
+import asia.liuyunxuan.ioc.beans.factory.*;
+import asia.liuyunxuan.ioc.context.ApplicationContext;
+import asia.liuyunxuan.ioc.context.ApplicationContextAware;
 
-public class UserService implements InitializingBean, DisposableBean {
+public class UserService implements BeanNameAware, BeanClassLoaderAware, ApplicationContextAware, BeanFactoryAware {
+
+    private ApplicationContext applicationContext;
+    private BeanFactory beanFactory;
 
     private String id;
     private String company;
@@ -11,13 +16,23 @@ public class UserService implements InitializingBean, DisposableBean {
     private UserDao userDao;
 
     @Override
-    public void destroy() {
-        System.out.println("执行：UserService.destroy");
+    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+        this.beanFactory = beanFactory;
     }
 
     @Override
-    public void afterPropertiesSet() {
-        System.out.println("执行：UserService.afterPropertiesSet");
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+    }
+
+    @Override
+    public void setBeanName(String name) {
+        System.out.println("Bean Name is：" + name);
+    }
+
+    @Override
+    public void setBeanClassLoader(ClassLoader classLoader) {
+        System.out.println("ClassLoader：" + classLoader);
     }
 
     public String getId() {
@@ -54,5 +69,13 @@ public class UserService implements InitializingBean, DisposableBean {
 
     public String queryUserInfo() {
         return userDao.queryUserName(id) + "," + company + "," + location;
+    }
+
+    public ApplicationContext getApplicationContext() {
+        return applicationContext;
+    }
+
+    public BeanFactory getBeanFactory() {
+        return beanFactory;
     }
 }
