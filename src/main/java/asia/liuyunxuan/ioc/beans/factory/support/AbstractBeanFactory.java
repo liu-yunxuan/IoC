@@ -6,14 +6,6 @@ import asia.liuyunxuan.ioc.beans.factory.config.BeanDefinition;
 
 public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry implements BeanFactory {
 
-    public static <T> T convert(Object obj, Class<T> clazz) {
-        if (clazz.isInstance(obj)) {
-            return clazz.cast(obj);
-        } else {
-            return null;
-        }
-    }
-
     @Override
     public Object getBean(String name) throws BeansException {
         return doGetBean(name, null);
@@ -24,16 +16,23 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
         return doGetBean(name, args);
     }
 
+    @Override
+    public <T> T getBean(String name, Class<T> requiredType) throws BeansException {
+        return (T) getBean(name);
+    }
+
     protected <T> T doGetBean(final String name, final Object[] args) {
         Object bean = getSingleton(name);
         if (bean != null) {
             return (T) bean;
         }
+
         BeanDefinition beanDefinition = getBeanDefinition(name);
         return (T) createBean(name, beanDefinition, args);
     }
 
     protected abstract BeanDefinition getBeanDefinition(String beanName) throws BeansException;
 
-    protected abstract Object createBean(String beanName, BeanDefinition beanDefinition, Object[] args);
+    protected abstract Object createBean(String beanName, BeanDefinition beanDefinition, Object[] args) throws BeansException;
+
 }

@@ -8,12 +8,21 @@ import asia.liuyunxuan.ioc.beans.PropertyValues;
 import asia.liuyunxuan.ioc.beans.factory.config.BeanDefinition;
 import asia.liuyunxuan.ioc.beans.factory.config.BeanReference;
 import asia.liuyunxuan.ioc.beans.factory.support.DefaultListableBeanFactory;
+import asia.liuyunxuan.ioc.beans.factory.xml.XmlBeanDefinitionReader;
+import asia.liuyunxuan.ioc.core.io.DefaultResourceLoader;
+import asia.liuyunxuan.ioc.core.io.Resource;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.NoOp;
+import org.junit.Before;
 import org.junit.Test;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.stream.Collectors;
 
 public class ApiTest {
     @Test
@@ -76,4 +85,54 @@ public class ApiTest {
         StudentService studentService = declaredConstructor.newInstance("test");
         System.out.println(studentService);
     }
+
+    private DefaultResourceLoader resourceLoader;
+
+    @Before
+    public void init() {
+        resourceLoader = new DefaultResourceLoader();
+    }
+
+    @Test
+    public void test_classpath() throws IOException {
+        Resource resource = resourceLoader.getResource("classpath:test.properties");
+        InputStream inputStream = resource.getInputStream();
+        String content = new BufferedReader(new InputStreamReader(inputStream))
+                .lines().collect(Collectors.joining(System.lineSeparator()));
+        System.out.println(content);
+    }
+
+    @Test
+    public void test_file() throws IOException {
+        Resource resource = resourceLoader.getResource("src/test/resources/test.properties");
+        InputStream inputStream = resource.getInputStream();
+        String content = new BufferedReader(new InputStreamReader(inputStream))
+                .lines().collect(Collectors.joining(System.lineSeparator()));
+        System.out.println(content);
+    }
+
+    @Test
+    public void test_url() throws IOException {
+        Resource resource = resourceLoader.getResource("https://liuyunxuan.asia");
+        InputStream inputStream = resource.getInputStream();
+        String content = new BufferedReader(new InputStreamReader(inputStream))
+                .lines().collect(Collectors.joining(System.lineSeparator()));
+        System.out.println(content);
+    }
+
+    @Test
+    public void test_xml() {
+        // 1.初始化 BeanFactory
+        DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+
+        // 2. 读取配置文件&注册Bean
+        XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(beanFactory);
+        reader.loadBeanDefinitions("classpath:spring.xml");
+
+        // 3. 获取Bean对象调用方法
+        UserService userService = beanFactory.getBean("userService", UserService.class);
+        String result = userService.queryUserInfo();
+        System.out.println("测试结果：" + result);
+    }
+
 }

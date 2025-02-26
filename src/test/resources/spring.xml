@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans>
+
+    <bean id="userDao" class="asia.liuyunxuan.ioc.bean.UserDao"/>
+
+    <bean id="userService" class="asia.liuyunxuan.ioc.bean.UserService">
+        <property name="id" value="10003"/>
+        <property name="userDao" ref="userDao"/>
+    </bean>
+
+</beans>
