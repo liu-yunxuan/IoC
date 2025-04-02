@@ -4,7 +4,7 @@
         <property name="location" value="classpath:token.properties"/>
     </bean>
 
-    <bean id="studentService" class="asia.liuyunxuan.ioc.aop.Student2Service">
+    <bean id="studentService" class="asia.liuyunxuan.ioc.bean.Student2Service">
         <property name="token" value="${token}"/>
     </bean>
 </beans>

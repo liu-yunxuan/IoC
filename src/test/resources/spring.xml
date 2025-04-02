@@ -1,24 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans>
 
-    <bean class="asia.liuyunxuan.ioc.event.ContextRefreshedEventListener"/>
-
-    <bean class="asia.liuyunxuan.ioc.event.ContextClosedEventListener"/>
-
-    <bean class="asia.liuyunxuan.ioc.event.CustomEventListener"/>
-
-    <bean id="student2Service" class="asia.liuyunxuan.ioc.aop.Student2Service"/>
-
-    <bean class="asia.liuyunxuan.ioc.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"/>
-
-    <bean id="beforeAdvice" class="asia.liuyunxuan.ioc.aop.Student2ServiceBeforeAdvice"/>
-
-    <bean id="methodInterceptor" class="asia.liuyunxuan.ioc.aop.framework.adapter.MethodBeforeAdviceInterceptor">
-        <property name="advice" ref="beforeAdvice"/>
+    <bean class="asia.liuyunxuan.ioc.beans.factory.PropertyPlaceholderConfigurer">
+        <property name="location" value="classpath:token.properties"/>
     </bean>
 
-    <bean id="pointcutAdvisor" class="asia.liuyunxuan.ioc.aop.aspectj.AspectJExpressionPointcutAdvisor">
-        <property name="expression" value="execution(* asia.liuyunxuan.ioc.aop.IStudentService.*(..))"/>
-        <property name="advice" ref="methodInterceptor"/>
-    </bean>
+    <component-scan base-package="asia.liuyunxuan.ioc.bean"/>
 </beans>

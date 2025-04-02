@@ -1,6 +1,7 @@
 package asia.liuyunxuan.ioc.context.annotation;
 
 
+import asia.liuyunxuan.ioc.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor;
 import asia.liuyunxuan.ioc.beans.factory.config.BeanDefinition;
 import asia.liuyunxuan.ioc.beans.factory.support.BeanDefinitionRegistry;
 import asia.liuyunxuan.ioc.stereotype.Component;
@@ -28,6 +29,7 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
                 registry.registerBeanDefinition(determineBeanName(beanDefinition), beanDefinition);
             }
         }
+        registry.registerBeanDefinition("asia.liuyunxuan.ioc.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor", new BeanDefinition(AutowiredAnnotationBeanPostProcessor.class));
     }
 
     private String resolveBeanScope(BeanDefinition beanDefinition) {

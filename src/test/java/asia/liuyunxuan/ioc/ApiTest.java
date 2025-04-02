@@ -5,6 +5,7 @@ import asia.liuyunxuan.ioc.aop.aspectj.AspectJExpressionPointcut;
 import asia.liuyunxuan.ioc.aop.framework.Cglib2AopProxy;
 import asia.liuyunxuan.ioc.aop.framework.JdkDynamicAopProxy;
 import asia.liuyunxuan.ioc.aop.framework.ReflectiveMethodInvocation;
+import asia.liuyunxuan.ioc.bean.Student2Service;
 import asia.liuyunxuan.ioc.bean.StudentService;
 import asia.liuyunxuan.ioc.bean.UserDao;
 import asia.liuyunxuan.ioc.bean.UserService;
@@ -279,5 +280,13 @@ public class ApiTest {
         IStudentService studentService = applicationContext.getBean("studentService", IStudentService.class);
         System.out.println("测试结果：" + studentService.selectUser());
     }
+
+    @Test
+    public void test_scan_annotation() {
+        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:spring.xml");
+        IStudentService studentService = applicationContext.getBean("studentService", IStudentService.class);
+        System.out.println("测试结果：" + studentService.selectUser());
+    }
+
 
 }

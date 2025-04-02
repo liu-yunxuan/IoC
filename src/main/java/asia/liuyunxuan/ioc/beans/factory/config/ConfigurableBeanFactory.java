@@ -2,6 +2,7 @@ package asia.liuyunxuan.ioc.beans.factory.config;
 
 
 import asia.liuyunxuan.ioc.beans.factory.HierarchicalBeanFactory;
+import asia.liuyunxuan.ioc.utils.StringValueResolver;
 
 public interface ConfigurableBeanFactory extends HierarchicalBeanFactory, SingletonBeanRegistry {
 
@@ -13,4 +14,7 @@ public interface ConfigurableBeanFactory extends HierarchicalBeanFactory, Single
 
     void destroySingletons();
 
+    void addEmbeddedValueResolver(StringValueResolver valueResolver);
+
+    String resolveEmbeddedValue(String value);
 }
