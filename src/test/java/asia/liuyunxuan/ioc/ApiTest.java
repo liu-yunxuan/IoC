@@ -1,5 +1,10 @@
 package asia.liuyunxuan.ioc;
 
+import asia.liuyunxuan.ioc.aop.*;
+import asia.liuyunxuan.ioc.aop.aspectj.AspectJExpressionPointcut;
+import asia.liuyunxuan.ioc.aop.framework.Cglib2AopProxy;
+import asia.liuyunxuan.ioc.aop.framework.JdkDynamicAopProxy;
+import asia.liuyunxuan.ioc.aop.framework.ReflectiveMethodInvocation;
 import asia.liuyunxuan.ioc.bean.StudentService;
 import asia.liuyunxuan.ioc.bean.UserDao;
 import asia.liuyunxuan.ioc.bean.UserService;
@@ -17,6 +22,7 @@ import asia.liuyunxuan.ioc.core.io.Resource;
 import asia.liuyunxuan.ioc.event.CustomEvent;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.NoOp;
+import org.aopalliance.intercept.MethodInterceptor;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -24,8 +30,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.*;
 import java.util.stream.Collectors;
 
 public class ApiTest {
@@ -189,6 +194,66 @@ public class ApiTest {
         applicationContext.publishEvent(new CustomEvent(applicationContext, 1019129009086763L, "成功了！"));
 
         applicationContext.registerShutdownHook();
+    }
+
+
+    @Test
+    public void test_dynamic() {
+        // 目标对象
+        IStudentService userService =new Student2Service();
+        // 组装代理信息
+        AdvisedSupport advisedSupport = new AdvisedSupport();
+        advisedSupport.setTargetSource(new TargetSource(userService));
+        advisedSupport.setMethodInterceptor(new StudentServiceInterceptor());
+        advisedSupport.setMethodMatcher(new AspectJExpressionPointcut("execution(* asia.liuyunxuan.ioc.aop.IStudentService.*(..))"));
+
+        // 代理对象(JdkDynamicAopProxy)
+        IStudentService proxy_jdk = (IStudentService) new JdkDynamicAopProxy(advisedSupport).getProxy();
+        // 测试调用
+        System.out.println("测试结果：" + proxy_jdk.selectUser());
+
+        // 代理对象(Cglib2AopProxy)
+        IStudentService proxy_cglib = (IStudentService) new Cglib2AopProxy(advisedSupport).getProxy();
+        // 测试调用
+        System.out.println("测试结果：" + proxy_cglib.register("花花"));
+    }
+
+
+    @Test
+    public void test_proxy_method() {
+        // 目标对象(可以替换成任何的目标对象)
+        Object targetObj = new Student2Service();
+
+        // AOP 代理
+        IStudentService proxy = (IStudentService) Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(), targetObj.getClass().getInterfaces(), new InvocationHandler() {
+            // 方法匹配器
+            final MethodMatcher methodMatcher = new AspectJExpressionPointcut("execution(* asia.liuyunxuan.ioc.aop.IStudentService.*(..))");
+
+            @Override
+            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                if (methodMatcher.matches(method, targetObj.getClass())) {
+                    // 方法拦截器
+                    MethodInterceptor methodInterceptor = invocation -> {
+                        long start = System.currentTimeMillis();
+                        try {
+                            return invocation.proceed();
+                        } finally {
+                            System.out.println("监控 - Begin By AOP");
+                            System.out.println("方法名称：" + invocation.getMethod().getName());
+                            System.out.println("方法耗时：" + (System.currentTimeMillis() - start) + "ms");
+                            System.out.println("监控 - End\r\n");
+                        }
+                    };
+                    // 反射调用
+                    return methodInterceptor.invoke(new ReflectiveMethodInvocation(targetObj, method, args));
+                }
+                return method.invoke(targetObj, args);
+            }
+        });
+
+        String result = proxy.selectUser();
+        System.out.println("测试结果：" + result);
+
     }
 
 }
