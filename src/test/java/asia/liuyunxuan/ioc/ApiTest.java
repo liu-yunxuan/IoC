@@ -256,4 +256,13 @@ public class ApiTest {
 
     }
 
+
+    @Test
+    public void test_aop() {
+        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:spring.xml");
+        IStudentService studentService = applicationContext.getBean("student2Service", IStudentService.class);
+        System.out.println("测试结果：" + studentService.selectUser());
+    }
+
+
 }
