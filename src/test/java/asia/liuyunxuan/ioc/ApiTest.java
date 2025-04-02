@@ -21,6 +21,7 @@ import asia.liuyunxuan.ioc.context.support.ClassPathXmlApplicationContext;
 import asia.liuyunxuan.ioc.core.io.DefaultResourceLoader;
 import asia.liuyunxuan.ioc.core.io.Resource;
 import asia.liuyunxuan.ioc.event.CustomEvent;
+import asia.liuyunxuan.ioc.proxy.IUserService;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.NoOp;
 import org.aopalliance.intercept.MethodInterceptor;
@@ -288,5 +289,10 @@ public class ApiTest {
         System.out.println("测试结果：" + studentService.selectUser());
     }
 
-
+    @Test
+    public void test_autoProxy() {
+        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:spring.xml");
+        IUserService userService = applicationContext.getBean("userService", IUserService.class);
+        System.out.println("测试结果：" + userService.queryUserInfo());
+    }
 }

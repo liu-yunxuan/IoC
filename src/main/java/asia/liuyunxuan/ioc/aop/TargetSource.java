@@ -1,5 +1,7 @@
 package asia.liuyunxuan.ioc.aop;
 
+import asia.liuyunxuan.ioc.utils.ClassUtils;
+
 public class TargetSource {
     private final Object target;
 
@@ -7,8 +9,10 @@ public class TargetSource {
         this.target = target;
     }
 
-    public Class<?>[] getTargetClass(){
-        return this.target.getClass().getInterfaces();
+    public Class<?>[] getTargetClass() {
+        Class<?> clazz = this.target.getClass();
+        clazz = ClassUtils.isCglibProxyClass(clazz) ? clazz.getSuperclass() : clazz;
+        return clazz.getInterfaces();
     }
 
 

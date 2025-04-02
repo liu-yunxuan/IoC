@@ -1,9 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans>
 
-    <bean class="asia.liuyunxuan.ioc.beans.factory.PropertyPlaceholderConfigurer">
-        <property name="location" value="classpath:token.properties"/>
+    <bean id="userService" class="asia.liuyunxuan.ioc.proxy.UserService">
+        <property name="token" value="RejDlI78hu223Opo983Ds"/>
     </bean>
 
-    <component-scan base-package="asia.liuyunxuan.ioc.bean"/>
+    <bean class="asia.liuyunxuan.ioc.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"/>
+
+    <bean id="beforeAdvice" class="asia.liuyunxuan.ioc.proxy.UserServiceBeforeAdvice"/>
+
+    <bean id="methodInterceptor" class="asia.liuyunxuan.ioc.aop.framework.adapter.MethodBeforeAdviceInterceptor">
+        <property name="advice" ref="beforeAdvice"/>
+    </bean>
+
+    <bean id="pointcutAdvisor" class="asia.liuyunxuan.ioc.aop.aspectj.AspectJExpressionPointcutAdvisor">
+        <property name="expression" value="execution(* asia.liuyunxuan.ioc.proxy.IUserService.*(..))"/>
+        <property name="advice" ref="methodInterceptor"/>
+    </bean>
 </beans>
