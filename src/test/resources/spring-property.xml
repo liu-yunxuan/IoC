@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans>
+    <bean class="asia.liuyunxuan.ioc.beans.factory.PropertyPlaceholderConfigurer">
+        <property name="location" value="classpath:token.properties"/>
+    </bean>
+
+    <bean id="studentService" class="asia.liuyunxuan.ioc.aop.Student2Service">
+        <property name="token" value="${token}"/>
+    </bean>
+</beans>

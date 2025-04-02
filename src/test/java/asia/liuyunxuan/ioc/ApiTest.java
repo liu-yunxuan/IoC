@@ -265,4 +265,19 @@ public class ApiTest {
     }
 
 
+    @Test
+    public void test_property() {
+        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:spring-property.xml");
+        IStudentService studentService = applicationContext.getBean("studentService", IStudentService.class);
+        System.out.println("测试结果：" + studentService);
+    }
+
+
+    @Test
+    public void test_scan() {
+        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:spring-scan.xml");
+        IStudentService studentService = applicationContext.getBean("studentService", IStudentService.class);
+        System.out.println("测试结果：" + studentService.selectUser());
+    }
+
 }

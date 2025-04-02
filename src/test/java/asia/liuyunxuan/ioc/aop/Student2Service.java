@@ -1,8 +1,13 @@
 package asia.liuyunxuan.ioc.aop;
 
+import asia.liuyunxuan.ioc.stereotype.Component;
+
 import java.util.Random;
 
+@Component("studentService")
 public class Student2Service implements IStudentService {
+
+    private String token;
 
     public String selectUser() {
         try {
@@ -22,4 +27,18 @@ public class Student2Service implements IStudentService {
         return "注册用户：" + userName + " success！";
     }
 
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    @Override
+    public String toString() {
+        return "Student2Service{" +
+                "token='" + token + '\'' +
+                '}';
+    }
 }

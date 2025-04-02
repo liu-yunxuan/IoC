@@ -6,6 +6,7 @@ import asia.liuyunxuan.ioc.beans.factory.config.BeanDefinition;
 import asia.liuyunxuan.ioc.beans.factory.config.BeanReference;
 import asia.liuyunxuan.ioc.beans.factory.support.AbstractBeanDefinitionReader;
 import asia.liuyunxuan.ioc.beans.factory.support.BeanDefinitionRegistry;
+import asia.liuyunxuan.ioc.context.annotation.ClassPathBeanDefinitionScanner;
 import asia.liuyunxuan.ioc.core.io.Resource;
 import asia.liuyunxuan.ioc.core.io.ResourceLoader;
 
@@ -13,6 +14,7 @@ import asia.liuyunxuan.ioc.core.io.ResourceLoader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 import java.io.InputStream;
+import java.util.Arrays;
 
 
 public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
@@ -106,6 +108,17 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
                     currentBean.getPropertyValues().addPropertyValue(
                             new PropertyValue(propName, propValue));
                 }
+
+                // 处理component-scan标签
+                else if ("component-scan".equals(tagName)) {
+                    String scanPath = getAttribute(reader, "base-package");
+
+                    // Java原生空值检查
+                    if (scanPath == null || scanPath.trim().isEmpty()) {
+                        throw new BeansException("The value of base-package attribute cannot be empty or null");
+                    }
+                    scanPackage(scanPath);
+                }
             }
 
             // 处理结束标签
@@ -122,6 +135,8 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
                     currentBeanName = null;
                 }
             }
+
+
         }
         reader.close();
     }
@@ -152,4 +167,15 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
         throw new BeansException("Invalid bean definition - missing class name");
     }
 
+    // 修改后的scanPackage方法
+    private void scanPackage(String scanPath) {
+        // 使用Java原生方法分割字符串
+        String[] basePackages = Arrays.stream(scanPath.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .toArray(String[]::new);
+
+        ClassPathBeanDefinitionScanner scanner = new ClassPathBeanDefinitionScanner(getRegistry());
+        scanner.doScan(basePackages);
+    }
 }
