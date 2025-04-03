@@ -20,6 +20,8 @@ import asia.liuyunxuan.ioc.common.MyBeanPostProcessor;
 import asia.liuyunxuan.ioc.context.support.ClassPathXmlApplicationContext;
 import asia.liuyunxuan.ioc.core.io.DefaultResourceLoader;
 import asia.liuyunxuan.ioc.core.io.Resource;
+import asia.liuyunxuan.ioc.dependence.Husband;
+import asia.liuyunxuan.ioc.dependence.Wife;
 import asia.liuyunxuan.ioc.event.CustomEvent;
 import asia.liuyunxuan.ioc.proxy.IUserService;
 import net.sf.cglib.proxy.Enhancer;
@@ -295,4 +297,14 @@ public class ApiTest {
         IUserService userService = applicationContext.getBean("userService", IUserService.class);
         System.out.println("测试结果：" + userService.queryUserInfo());
     }
+
+    @Test
+    public void test_circular() {
+        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:spring.xml");
+        Husband husband = applicationContext.getBean("husband", Husband.class);
+        Wife wife = applicationContext.getBean("wife", Wife.class);
+        System.out.println("老公的媳妇：" + husband.queryWife());
+        System.out.println("媳妇的老公：" + wife.queryHusband());
+    }
+
 }
