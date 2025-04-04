@@ -7,6 +7,10 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 public class SimpleInstantiationStrategy implements InstantiationStrategy {
+
+    public SimpleInstantiationStrategy() {
+    }
+
     @Override
     public Object instantiate(BeanDefinition beanDefinition, String beanName, Constructor<?> ctor, Object[] args) throws BeansException {
         Class<?> clazz = beanDefinition.getBeanClass();

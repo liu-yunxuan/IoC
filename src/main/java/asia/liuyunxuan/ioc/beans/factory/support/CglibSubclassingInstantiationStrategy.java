@@ -8,6 +8,10 @@ import net.sf.cglib.proxy.NoOp;
 import java.lang.reflect.Constructor;
 
 public class CglibSubclassingInstantiationStrategy implements InstantiationStrategy {
+
+    public CglibSubclassingInstantiationStrategy() {
+    }
+
     @Override
     public Object instantiate(BeanDefinition beanDefinition, String beanName, Constructor<?> ctor, Object[] args) throws BeansException {
         Enhancer enhancer = new Enhancer();

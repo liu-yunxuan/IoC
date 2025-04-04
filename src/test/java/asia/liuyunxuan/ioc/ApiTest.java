@@ -14,6 +14,7 @@ import asia.liuyunxuan.ioc.beans.PropertyValues;
 import asia.liuyunxuan.ioc.beans.factory.config.BeanDefinition;
 import asia.liuyunxuan.ioc.beans.factory.config.BeanReference;
 import asia.liuyunxuan.ioc.beans.factory.support.DefaultListableBeanFactory;
+import asia.liuyunxuan.ioc.beans.factory.support.InstantiationStrategy;
 import asia.liuyunxuan.ioc.beans.factory.xml.XmlBeanDefinitionReader;
 import asia.liuyunxuan.ioc.common.MyBeanFactoryPostProcessor;
 import asia.liuyunxuan.ioc.common.MyBeanPostProcessor;
@@ -24,6 +25,7 @@ import asia.liuyunxuan.ioc.dependence.Husband;
 import asia.liuyunxuan.ioc.dependence.Wife;
 import asia.liuyunxuan.ioc.event.CustomEvent;
 import asia.liuyunxuan.ioc.proxy.IUserService;
+import asia.liuyunxuan.ioc.spi.ExtensionLoader;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.NoOp;
 import org.aopalliance.intercept.MethodInterceptor;
@@ -35,6 +37,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.*;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ApiTest {
@@ -305,6 +308,17 @@ public class ApiTest {
         Wife wife = applicationContext.getBean("wife", Wife.class);
         System.out.println("老公的媳妇：" + husband.queryWife());
         System.out.println("媳妇的老公：" + wife.queryHusband());
+    }
+
+    @Test
+    public void test_spi() throws IOException, ClassNotFoundException {
+        ExtensionLoader extensionLoader = ExtensionLoader.getInstance();
+        extensionLoader.loadExtension(InstantiationStrategy.class);
+        Map<String, InstantiationStrategy> gets = extensionLoader.gets(InstantiationStrategy.class);
+        gets.forEach((k, v) -> {
+            System.out.println(k);
+            System.out.println(v);
+        });
     }
 
 }

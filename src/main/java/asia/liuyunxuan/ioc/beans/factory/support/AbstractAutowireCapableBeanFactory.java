@@ -12,7 +12,11 @@ import java.lang.reflect.Method;
 
 public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFactory implements AutowireCapableBeanFactory {
 
-    private InstantiationStrategy instantiationStrategy = new SimpleInstantiationStrategy();
+    private InstantiationStrategy instantiationStrategy;
+
+    public AbstractAutowireCapableBeanFactory() {
+        this.instantiationStrategy = InstantiationStrategyFactory.getStrategy("jdk");
+    }
 
     @Override
     protected Object createBean(String beanName, BeanDefinition beanDefinition, Object[] args) throws BeansException {

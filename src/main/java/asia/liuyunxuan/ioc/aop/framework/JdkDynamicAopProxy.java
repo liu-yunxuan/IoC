@@ -8,9 +8,16 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
 public class JdkDynamicAopProxy implements AopProxy, InvocationHandler {
-    private final AdvisedSupport advised;
+    private AdvisedSupport advised;
 
     public JdkDynamicAopProxy(AdvisedSupport advised) {
+        this.advised = advised;
+    }
+
+    public JdkDynamicAopProxy() {
+    }
+
+    public void setAdvised(AdvisedSupport advised) {
         this.advised = advised;
     }
 

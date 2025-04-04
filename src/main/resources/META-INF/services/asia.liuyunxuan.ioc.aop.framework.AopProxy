@@ -1,0 +1,2 @@
+jdk=asia.liuyunxuan.ioc.aop.framework.JdkDynamicAopProxy
+cglib=asia.liuyunxuan.ioc.aop.framework.Cglib2AopProxy

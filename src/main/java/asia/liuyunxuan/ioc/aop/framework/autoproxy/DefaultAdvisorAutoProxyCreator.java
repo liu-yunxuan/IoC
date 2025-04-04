@@ -22,6 +22,12 @@ public class DefaultAdvisorAutoProxyCreator implements InstantiationAwareBeanPos
 
     private DefaultListableBeanFactory beanFactory;
 
+    private String proxyName=null;
+
+    public void setProxyName(String proxyName) {
+        this.proxyName = proxyName;
+    }
+
     private final Set<Object> earlyProxyReferences = Collections.synchronizedSet(new HashSet<>());
     @Override
     public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
@@ -75,7 +81,7 @@ public class DefaultAdvisorAutoProxyCreator implements InstantiationAwareBeanPos
             advisedSupport.setProxyTargetClass(true);
 
             // 返回代理对象
-            return new ProxyFactory(advisedSupport).getProxy();
+            return new ProxyFactory(advisedSupport).getProxy(proxyName);
         }
 
         return bean;

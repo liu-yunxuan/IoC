@@ -8,9 +8,17 @@ import net.sf.cglib.proxy.MethodProxy;
 import java.lang.reflect.Method;
 
 public class Cglib2AopProxy implements AopProxy{
-    private final AdvisedSupport advised;
+    private AdvisedSupport advised;
 
     public Cglib2AopProxy(AdvisedSupport advised) {
+        this.advised = advised;
+    }
+
+    public Cglib2AopProxy() {
+        this.advised = null;
+    }
+
+    public void setAdvised(AdvisedSupport advised) {
         this.advised = advised;
     }
 
