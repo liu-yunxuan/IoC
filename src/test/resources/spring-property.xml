@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans>
-    <bean class="asia.liuyunxuan.ioc.beans.factory.PropertyPlaceholderConfigurer">
+    <bean class="asia.liuyunxuan.ioc.injectable.container.PropertyPlaceholderConfigurer">
         <property name="location" value="classpath:token.properties"/>
     </bean>
 

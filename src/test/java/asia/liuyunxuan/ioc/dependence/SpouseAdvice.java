@@ -1,6 +1,6 @@
 package asia.liuyunxuan.ioc.dependence;
 
-import asia.liuyunxuan.ioc.aop.MethodBeforeAdvice;
+import asia.liuyunxuan.ioc.aspect.MethodBeforeAdvice;
 import java.lang.reflect.Method;
 
 public class SpouseAdvice implements MethodBeforeAdvice {

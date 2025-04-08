@@ -1,2 +1,0 @@
-jdk=asia.liuyunxuan.ioc.beans.factory.support.SimpleInstantiationStrategy
-cglib=asia.liuyunxuan.ioc.beans.factory.support.CglibSubclassingInstantiationStrategy

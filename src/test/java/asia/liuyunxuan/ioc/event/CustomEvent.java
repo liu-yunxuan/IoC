@@ -1,9 +1,9 @@
 package asia.liuyunxuan.ioc.event;
 
 
-import asia.liuyunxuan.ioc.context.event.ApplicationContextEvent;
+import asia.liuyunxuan.ioc.runtime.message.Message;
 
-public class CustomEvent extends ApplicationContextEvent {
+public class CustomEvent extends Message {
 
     private Long id;
     private String message;

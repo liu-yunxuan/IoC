@@ -1,13 +1,13 @@
 package asia.liuyunxuan.ioc.bean;
 
-import asia.liuyunxuan.ioc.beans.factory.FactoryBean;
+import asia.liuyunxuan.ioc.component.container.FactoryComponent;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ProxyBeanFactory implements FactoryBean<IUserDao> {
+public class ProxyBeanFactory implements FactoryComponent<IUserDao> {
 
     @Override
     public IUserDao getObject() {

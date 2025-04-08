@@ -1,11 +1,11 @@
 package asia.liuyunxuan.ioc.bean;
 
-import asia.liuyunxuan.ioc.stereotype.Component;
+import asia.liuyunxuan.ioc.annotation.Injectable;
 
 import java.util.HashMap;
 import java.util.Map;
 
-@Component
+@Injectable
 public class UserDao {
     private static final Map<String, String> hashMap = new HashMap<>();
 

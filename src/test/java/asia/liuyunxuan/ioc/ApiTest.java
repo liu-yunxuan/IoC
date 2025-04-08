@@ -1,31 +1,31 @@
 package asia.liuyunxuan.ioc;
 
-import asia.liuyunxuan.ioc.aop.*;
-import asia.liuyunxuan.ioc.aop.aspectj.AspectJExpressionPointcut;
-import asia.liuyunxuan.ioc.aop.framework.Cglib2AopProxy;
-import asia.liuyunxuan.ioc.aop.framework.JdkDynamicAopProxy;
-import asia.liuyunxuan.ioc.aop.framework.ReflectiveMethodInvocation;
+import asia.liuyunxuan.ioc.aspect.*;
+import asia.liuyunxuan.ioc.aspect.aspectj.AspectJExpressionJoinPointSelector;
+import asia.liuyunxuan.ioc.aspect.framework.Cglib2AopProxy;
+import asia.liuyunxuan.ioc.aspect.framework.JdkDynamicAopProxy;
+import asia.liuyunxuan.ioc.aspect.framework.ReflectiveMethodInvocation;
 import asia.liuyunxuan.ioc.bean.Student2Service;
 import asia.liuyunxuan.ioc.bean.StudentService;
 import asia.liuyunxuan.ioc.bean.UserDao;
 import asia.liuyunxuan.ioc.bean.UserService;
-import asia.liuyunxuan.ioc.beans.PropertyValue;
-import asia.liuyunxuan.ioc.beans.PropertyValues;
-import asia.liuyunxuan.ioc.beans.factory.config.BeanDefinition;
-import asia.liuyunxuan.ioc.beans.factory.config.BeanReference;
-import asia.liuyunxuan.ioc.beans.factory.support.DefaultListableBeanFactory;
-import asia.liuyunxuan.ioc.beans.factory.support.InstantiationStrategy;
-import asia.liuyunxuan.ioc.beans.factory.xml.XmlBeanDefinitionReader;
-import asia.liuyunxuan.ioc.common.MyBeanFactoryPostProcessor;
+import asia.liuyunxuan.ioc.common.MyComponentProviderPostProcessor;
+import asia.liuyunxuan.ioc.component.PropertyValue;
+import asia.liuyunxuan.ioc.component.PropertyValues;
+import asia.liuyunxuan.ioc.component.container.config.ComponentDefinition;
+import asia.liuyunxuan.ioc.component.container.config.ComponentReference;
+import asia.liuyunxuan.ioc.component.container.support.DefaultRegistry;
+import asia.liuyunxuan.ioc.component.container.support.InstantiationStrategy;
+import asia.liuyunxuan.ioc.component.container.xml.XmlComponentDefinitionReader;
 import asia.liuyunxuan.ioc.common.MyBeanPostProcessor;
-import asia.liuyunxuan.ioc.context.support.ClassPathXmlApplicationContext;
-import asia.liuyunxuan.ioc.core.io.DefaultResourceLoader;
-import asia.liuyunxuan.ioc.core.io.Resource;
+import asia.liuyunxuan.ioc.runtime.support.ClassPathXmlContext;
+import asia.liuyunxuan.ioc.kernel.io.DefaultResourceLoader;
+import asia.liuyunxuan.ioc.kernel.io.Resource;
 import asia.liuyunxuan.ioc.dependence.Husband;
 import asia.liuyunxuan.ioc.dependence.Wife;
 import asia.liuyunxuan.ioc.event.CustomEvent;
 import asia.liuyunxuan.ioc.proxy.IUserService;
-import asia.liuyunxuan.ioc.spi.ExtensionLoader;
+import asia.liuyunxuan.ioc.extension.ExtensionLoader;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.NoOp;
 import org.aopalliance.intercept.MethodInterceptor;
@@ -43,20 +43,20 @@ import java.util.stream.Collectors;
 public class ApiTest {
     @Test
     public void test_BeanFactory() {
-        // 1.初始化 BeanFactory
-        DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+        // 1.初始化 ComponentProvider
+        DefaultRegistry beanFactory = new DefaultRegistry();
 
         // 2. UserDao 注册
-        beanFactory.registerBeanDefinition("userDao", new BeanDefinition(UserDao.class));
+        beanFactory.registerBeanDefinition("userDao", new ComponentDefinition(UserDao.class));
 
         // 3. UserService 设置属性[id、userDao]
         PropertyValues propertyValues = new PropertyValues();
         propertyValues.addPropertyValue(new PropertyValue("id", "10001"));
-        propertyValues.addPropertyValue(new PropertyValue("userDao",new BeanReference("userDao")));
+        propertyValues.addPropertyValue(new PropertyValue("userDao",new ComponentReference("userDao")));
 
         // 4. UserService 注入bean
-        BeanDefinition beanDefinition = new BeanDefinition(UserService.class, propertyValues);
-        beanFactory.registerBeanDefinition("userService", beanDefinition);
+        ComponentDefinition componentDefinition = new ComponentDefinition(UserService.class, propertyValues);
+        beanFactory.registerBeanDefinition("userService", componentDefinition);
 
         // 5. UserService 获取bean
         UserService userService = (UserService) beanFactory.getBean("userService");
@@ -138,15 +138,15 @@ public class ApiTest {
 
     @Test
     public void test_BeanFactoryPostProcessorAndBeanPostProcessor(){
-        // 1.初始化 BeanFactory
-        DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+        // 1.初始化 ComponentProvider
+        DefaultRegistry beanFactory = new DefaultRegistry();
 
         // 2. 读取配置文件&注册Bean
-        XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(beanFactory);
+        XmlComponentDefinitionReader reader = new XmlComponentDefinitionReader(beanFactory);
         reader.loadBeanDefinitions("classpath:spring.xml");
 
-        // 3. BeanDefinition 加载完成 & Bean实例化之前，修改 BeanDefinition 的属性值
-        MyBeanFactoryPostProcessor beanFactoryPostProcessor = new MyBeanFactoryPostProcessor();
+        // 3. ComponentDefinition 加载完成 & Bean实例化之前，修改 ComponentDefinition 的属性值
+        MyComponentProviderPostProcessor beanFactoryPostProcessor = new MyComponentProviderPostProcessor();
         beanFactoryPostProcessor.postProcessBeanFactory(beanFactory);
 
         // 4. Bean实例化之后，修改 Bean 属性信息
@@ -167,7 +167,7 @@ public class ApiTest {
     @Test
     public void test_prototype() {
         // 1. 初始化容器
-        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:spring.xml");
+        ClassPathXmlContext applicationContext = new ClassPathXmlContext("classpath:spring.xml");
         applicationContext.registerShutdownHook();
 
         // 2. 获取Bean对象（测试作用域）
@@ -186,8 +186,8 @@ public class ApiTest {
 
     @Test
     public void test_factory_bean() {
-        // 1.初始化 BeanFactory
-        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:spring.xml");
+        // 1.初始化 ComponentProvider
+        ClassPathXmlContext applicationContext = new ClassPathXmlContext("classpath:spring.xml");
         applicationContext.registerShutdownHook();
 
         // 2. 调用代理方法
@@ -197,7 +197,7 @@ public class ApiTest {
 
     @Test
     public void test_event() {
-        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:spring.xml");
+        ClassPathXmlContext applicationContext = new ClassPathXmlContext("classpath:spring.xml");
         applicationContext.publishEvent(new CustomEvent(applicationContext, 1019129009086763L, "成功了！"));
 
         applicationContext.registerShutdownHook();
@@ -212,7 +212,7 @@ public class ApiTest {
         AdvisedSupport advisedSupport = new AdvisedSupport();
         advisedSupport.setTargetSource(new TargetSource(userService));
         advisedSupport.setMethodInterceptor(new StudentServiceInterceptor());
-        advisedSupport.setMethodMatcher(new AspectJExpressionPointcut("execution(* asia.liuyunxuan.ioc.aop.IStudentService.*(..))"));
+        advisedSupport.setMethodMatcher(new AspectJExpressionJoinPointSelector("execution(* asia.liuyunxuan.ioc.aspect.IStudentService.*(..))"));
 
         // 代理对象(JdkDynamicAopProxy)
         IStudentService proxy_jdk = (IStudentService) new JdkDynamicAopProxy(advisedSupport).getProxy();
@@ -234,7 +234,7 @@ public class ApiTest {
         // AOP 代理
         IStudentService proxy = (IStudentService) Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(), targetObj.getClass().getInterfaces(), new InvocationHandler() {
             // 方法匹配器
-            final MethodMatcher methodMatcher = new AspectJExpressionPointcut("execution(* asia.liuyunxuan.ioc.aop.IStudentService.*(..))");
+            final MethodMatcher methodMatcher = new AspectJExpressionJoinPointSelector("execution(* asia.liuyunxuan.ioc.aspect.IStudentService.*(..))");
 
             @Override
             public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
@@ -266,7 +266,7 @@ public class ApiTest {
 
     @Test
     public void test_aop() {
-        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:spring.xml");
+        ClassPathXmlContext applicationContext = new ClassPathXmlContext("classpath:spring.xml");
         IStudentService studentService = applicationContext.getBean("student2Service", IStudentService.class);
         System.out.println("测试结果：" + studentService.selectUser());
     }
@@ -274,7 +274,7 @@ public class ApiTest {
 
     @Test
     public void test_property() {
-        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:spring-property.xml");
+        ClassPathXmlContext applicationContext = new ClassPathXmlContext("classpath:spring-property.xml");
         IStudentService studentService = applicationContext.getBean("studentService", IStudentService.class);
         System.out.println("测试结果：" + studentService);
     }
@@ -282,28 +282,28 @@ public class ApiTest {
 
     @Test
     public void test_scan() {
-        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:spring-scan.xml");
+        ClassPathXmlContext applicationContext = new ClassPathXmlContext("classpath:spring-scan.xml");
         IStudentService studentService = applicationContext.getBean("studentService", IStudentService.class);
         System.out.println("测试结果：" + studentService.selectUser());
     }
 
     @Test
     public void test_scan_annotation() {
-        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:spring.xml");
+        ClassPathXmlContext applicationContext = new ClassPathXmlContext("classpath:spring.xml");
         IStudentService studentService = applicationContext.getBean("studentService", IStudentService.class);
         System.out.println("测试结果：" + studentService.selectUser());
     }
 
     @Test
     public void test_autoProxy() {
-        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:spring.xml");
+        ClassPathXmlContext applicationContext = new ClassPathXmlContext("classpath:spring.xml");
         IUserService userService = applicationContext.getBean("userService", IUserService.class);
         System.out.println("测试结果：" + userService.queryUserInfo());
     }
 
     @Test
     public void test_circular() {
-        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:spring.xml");
+        ClassPathXmlContext applicationContext = new ClassPathXmlContext("classpath:spring.xml");
         Husband husband = applicationContext.getBean("husband", Husband.class);
         Wife wife = applicationContext.getBean("wife", Wife.class);
         System.out.println("老公的媳妇：" + husband.queryWife());

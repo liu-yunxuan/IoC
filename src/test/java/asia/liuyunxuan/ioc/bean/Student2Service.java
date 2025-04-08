@@ -1,18 +1,18 @@
 package asia.liuyunxuan.ioc.bean;
 
-import asia.liuyunxuan.ioc.aop.IStudentService;
-import asia.liuyunxuan.ioc.beans.factory.annotation.Autowired;
-import asia.liuyunxuan.ioc.beans.factory.annotation.Value;
-import asia.liuyunxuan.ioc.stereotype.Component;
+import asia.liuyunxuan.ioc.aspect.IStudentService;
+import asia.liuyunxuan.ioc.component.container.annotation.AutoInject;
+import asia.liuyunxuan.ioc.component.container.annotation.Value;
+import asia.liuyunxuan.ioc.annotation.Injectable;
 
 import java.util.Random;
 
-@Component("studentService")
+@Injectable("studentService")
 public class Student2Service implements IStudentService {
 
     @Value("${token}")
     private String token;
-    @Autowired
+    @AutoInject
     private UserDao userDao;
 
     public String selectUser() {

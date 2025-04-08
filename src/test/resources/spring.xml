@@ -13,15 +13,15 @@
     <bean id="husbandMother" class="asia.liuyunxuan.ioc.dependence.HusbandMother"/>
 
     <!-- AOP 配置，验证三级缓存 -->
-    <bean class="asia.liuyunxuan.ioc.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"/>
+    <bean class="asia.liuyunxuan.ioc.aspect.framework.autoproxy.DefaultAdvisorAutoProxyCreator"/>
 
     <bean id="beforeAdvice" class="asia.liuyunxuan.ioc.dependence.SpouseAdvice"/>
 
-    <bean id="methodInterceptor" class="asia.liuyunxuan.ioc.aop.framework.adapter.MethodBeforeAdviceInterceptor">
+    <bean id="methodInterceptor" class="asia.liuyunxuan.ioc.aspect.framework.adapter.MethodBeforeAdviceInterceptor">
         <property name="advice" ref="beforeAdvice"/>
     </bean>
 
-    <bean id="pointcutAdvisor" class="asia.liuyunxuan.ioc.aop.aspectj.AspectJExpressionPointcutAdvisor">
+    <bean id="pointcutAdvisor" class="asia.liuyunxuan.ioc.aspect.aspectj.AspectJExpressionPointcutAspectAdvisor">
         <property name="expression" value="execution(* asia.liuyunxuan.ioc.dependence.Wife.*(..))"/>
         <property name="advice" ref="methodInterceptor"/>
     </bean>

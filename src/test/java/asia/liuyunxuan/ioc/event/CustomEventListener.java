@@ -1,11 +1,11 @@
 package asia.liuyunxuan.ioc.event;
 
 
-import asia.liuyunxuan.ioc.context.ApplicationListener;
+import asia.liuyunxuan.ioc.runtime.MessageSubscriber;
 
 import java.util.Date;
 
-public class CustomEventListener implements ApplicationListener<CustomEvent> {
+public class CustomEventListener implements MessageSubscriber<CustomEvent> {
 
     @Override
     public void onApplicationEvent(CustomEvent event) {

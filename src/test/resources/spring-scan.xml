@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans>
-    <component-scan base-package="asia.liuyunxuan.ioc.aop"/>
+    <injectable-scan base-package="asia.liuyunxuan.ioc.aspect"/>
 </beans>

@@ -1,0 +1,2 @@
+jdk=asia.liuyunxuan.ioc.component.container.support.SimpleInstantiationStrategy
+cglib=asia.liuyunxuan.ioc.component.container.support.CglibSubclassingInstantiationStrategy
