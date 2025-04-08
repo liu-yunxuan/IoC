@@ -12,17 +12,50 @@ import asia.liuyunxuan.ioc.utils.StringValueResolver;
 import java.io.IOException;
 import java.util.Properties;
 
-
+/**
+ * 属性占位符配置器，用于处理bean定义中的占位符。
+ * <p>
+ * 这个类实现了BeanFactoryPostProcessor接口，在bean实例化之前，
+ * 负责处理bean定义中的占位符。它的主要功能包括：
+ * <ul>
+ *     <li>加载属性文件</li>
+ *     <li>解析bean定义中的占位符</li>
+ *     <li>用属性文件中的实际值替换占位符</li>
+ * </ul>
+ * <p>
+ * 使用示例：
+ * <pre>
+ * ${database.url}
+ * ${mail.host}
+ * </pre>
+ * 
+ * @see BeanFactoryPostProcessor
+ * @see ConfigurableListableBeanFactory
+ */
 public class PropertyPlaceholderConfigurer implements BeanFactoryPostProcessor {
 
 
+    /**
+     * 默认的占位符前缀
+     */
     public static final String DEFAULT_PLACEHOLDER_PREFIX = "${";
 
-
+    /**
+     * 默认的占位符后缀
+     */
     public static final String DEFAULT_PLACEHOLDER_SUFFIX = "}";
 
+    /**
+     * 属性文件的位置
+     */
     private String location;
 
+    /**
+     * 处理bean工厂中的bean定义，替换其属性值中的占位符
+     *
+     * @param beanFactory 要处理的bean工厂
+     * @throws BeansException 如果处理过程中发生错误
+     */
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
         try {
@@ -56,6 +89,13 @@ public class PropertyPlaceholderConfigurer implements BeanFactoryPostProcessor {
         }
     }
 
+    /**
+     * 解析字符串中的占位符
+     *
+     * @param value 包含占位符的字符串
+     * @param properties 包含实际值的属性集
+     * @return 解析后的字符串
+     */
     private String resolvePlaceholder(String value, Properties properties) {
         StringBuilder buffer = new StringBuilder(value);
         int startIdx = value.indexOf(DEFAULT_PLACEHOLDER_PREFIX);
@@ -68,10 +108,18 @@ public class PropertyPlaceholderConfigurer implements BeanFactoryPostProcessor {
         return buffer.toString();
     }
 
+    /**
+     * 设置属性文件的位置
+     *
+     * @param location 属性文件的资源位置
+     */
     public void setLocation(String location) {
         this.location = location;
     }
 
+    /**
+     * 用于解析字符串值中占位符的解析器实现
+     */
     private class PlaceholderResolvingStringValueResolver implements StringValueResolver {
 
         private final Properties properties;

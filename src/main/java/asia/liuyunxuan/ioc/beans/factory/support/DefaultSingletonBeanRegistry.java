@@ -11,6 +11,17 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * 默认的单例Bean注册表实现类。
+ * <p>
+ * 该类实现了SingletonBeanRegistry接口，提供了单例Bean的注册和获取功能。
+ * 它通过三级缓存机制来解决循环依赖问题：
+ * <ul>
+ * <li>一级缓存（singletonObjects）：用于存储完全初始化好的Bean</li>
+ * <li>二级缓存（earlySingletonObjects）：用于存储原始的Bean对象</li>
+ * <li>三级缓存（singletonFactories）：用于存储Bean的工厂对象</li>
+ * </ul>
+ */
 public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
 
     protected static final Object NULL_OBJECT = new Object();
@@ -26,6 +37,17 @@ public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
 
     private final Map<String, DisposableBean> disposableBeans = new LinkedHashMap<>();
 
+    /**
+     * 获取单例Bean。
+     * <p>
+     * 该方法实现了三级缓存机制，用于解决循环依赖问题：
+     * 1. 先从一级缓存singletonObjects中获取
+     * 2. 如果没有，再从二级缓存earlySingletonObjects中获取
+     * 3. 如果还没有，则尝试从三级缓存singletonFactories中获取并放入二级缓存
+     *
+     * @param beanName Bean的名称
+     * @return 单例Bean实例，如果不存在则返回null
+     */
     @Override
     public Object getSingleton(String beanName) {
         Object singletonObject = singletonObjects.get(beanName);
@@ -45,12 +67,26 @@ public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
         return singletonObject;
     }
 
+    /**
+     * 注册单例Bean。
+     *
+     * @param beanName Bean的名称
+     * @param singletonObject Bean实例
+     */
     public void registerSingleton(String beanName, Object singletonObject) {
         singletonObjects.put(beanName, singletonObject);
         earlySingletonObjects.remove(beanName);
         singletonFactories.remove(beanName);
     }
 
+    /**
+     * 添加单例工厂。
+     * <p>
+     * 将单例工厂添加到三级缓存中，用于解决循环依赖。
+     *
+     * @param beanName Bean的名称
+     * @param singletonFactory 创建Bean的工厂
+     */
     protected void addSingletonFactory(String beanName, ObjectFactory<?> singletonFactory){
         if (!this.singletonObjects.containsKey(beanName)) {
             this.singletonFactories.put(beanName, singletonFactory);
@@ -59,21 +95,36 @@ public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
     }
 
 
+    /**
+     * 注册需要销毁的Bean。
+     *
+     * @param beanName Bean的名称
+     * @param bean 需要销毁的Bean实例
+     */
     public void registerDisposableBean(String beanName, DisposableBean bean) {
         disposableBeans.put(beanName, bean);
     }
 
+    /**
+     * 销毁所有单例Bean。
+     * <p>
+     * 按照销毁顺序逆序调用Bean的销毁方法。
+     */
+
     public void destroySingletons() {
         Set<String> keySet = this.disposableBeans.keySet();
-        Object[] disposableBeanNames = keySet.toArray();
+        String[] disposableBeanNames = keySet.toArray(new String[0]);
 
         for (int i = disposableBeanNames.length - 1; i >= 0; i--) {
-            Object beanName = disposableBeanNames[i];
+            String beanName = disposableBeanNames[i];
             DisposableBean disposableBean = disposableBeans.remove(beanName);
-            try {
-                disposableBean.destroy();
-            } catch (Exception e) {
-                throw new BeansException("Destroy method on bean with name '" + beanName + "' threw an exception", e);
+            if (disposableBean != null) {
+                try {
+                    disposableBean.destroy();
+                } catch (Exception e) {
+                    System.err.println("Error destroying bean with name: " + beanName);
+                    throw new BeansException("Destroy method on bean with name '" + beanName + "' threw an exception", e);
+                }
             }
         }
     }

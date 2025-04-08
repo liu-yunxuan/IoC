@@ -11,7 +11,47 @@ import asia.liuyunxuan.ioc.utils.ClassUtils;
 
 import java.lang.reflect.Field;
 
-
+/**
+ * 处理@Autowired、@Value和@Qualifier注解的Bean后处理器。
+ * <p>
+ * 该处理器实现了以下功能：
+ * <ul>
+ *     <li>处理@Value注解，将配置属性值注入到相应字段</li>
+ *     <li>处理@Autowired注解，实现依赖的自动装配</li>
+ *     <li>处理@Qualifier注解，实现限定注入的具体Bean</li>
+ * </ul>
+ * <p>
+ * 工作流程：
+ * <ol>
+ *     <li>在Bean实例化后，属性填充前被调用</li>
+ *     <li>扫描Bean中的所有字段，查找相关注解</li>
+ *     <li>处理@Value注解：解析属性值并注入</li>
+ *     <li>处理@Autowired注解：
+ *         <ul>
+ *             <li>若有@Qualifier，按名称和类型注入指定Bean</li>
+ *             <li>若无@Qualifier，按类型注入匹配的Bean</li>
+ *         </ul>
+ *     </li>
+ * </ol>
+ * <p>
+ * 示例：
+ * <pre>
+ * public class UserService {
+ *     &#064;Value("${app.name}")
+ *     private String appName;
+ *     
+ *     &#064;Autowired
+ *     &#064;Qualifier("mainRepository")
+ *     private UserRepository userRepository;
+ * }
+ * </pre>
+ *
+ * @see Autowired
+ * @see Value
+ * @see Qualifier
+ * @see InstantiationAwareBeanPostProcessor
+ * @see BeanFactoryAware
+ */
 public class AutowiredAnnotationBeanPostProcessor implements InstantiationAwareBeanPostProcessor, BeanFactoryAware {
 
     private ConfigurableListableBeanFactory beanFactory;
